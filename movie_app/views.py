@@ -47,3 +47,9 @@ def review_detail(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = ReviewSerializer(review)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def movies_reviews_view(request):
+    movie_reviews = Movie.objects.all()
+    data = MovieSerializer(movie_reviews, many=True).data
+    return Response(data=data)
