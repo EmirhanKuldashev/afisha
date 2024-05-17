@@ -2,6 +2,7 @@ from movie_app.models import Director, Movie, Review
 from movie_app.serializers import DirectorSerializer, MovieSerializer, ReviewSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import generics
 
 @api_view(['GET'])
 def director_list(request):
@@ -153,3 +154,46 @@ def review_detail(request, pk):
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class DirectorListView(generics.ListAPIView):
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+
+
+class DirectorDetailView(generics.RetrieveAPIView):
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+    lookup_field = 'pk'
+
+
+class MovieListView(generics.ListAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+
+
+class MovieDetailView(generics.RetrieveAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    lookup_field = 'pk'
+
+
+class ReviewListView(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
+class ReviewDetailView(generics.RetrieveAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    lookup_field = 'pk'
+
+
+class MoviesReviewsView(generics.RetrieveAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    lookup_field = 'pk'
+
+    def retrieve(self, request, *args, **kwargs):
+        movie = self.get_object()
+        reviews = movie.review_set.all()
+        serializer = MovieSerializer(movie, reviews=reviews)
+        return Response(serializer.data)
